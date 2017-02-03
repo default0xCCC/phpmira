@@ -1,0 +1,46 @@
+#!/usr/bin/php
+<?php
+	// load all .class.php files in a directory
+	function classes_load( $dir = null, $flag_print = false )
+	{
+		if( ! $dir )
+			throw new Exception('dir not specified');
+		
+		$dir = dirname(__FILE__).'/'.$dir;
+		
+		if( ! is_dir($dir) )
+			throw new Exception('dir "'.$dir.'" not found');
+		
+		foreach( glob($dir.'/*.class.php') as $file )
+		{
+			if( is_dir($file) )
+				continue;
+			
+			if( $flag_print )
+				echo "loading: ".basename($file)."\n";
+			
+			require_once($file);
+		}
+	}
+	
+	echo "\nphpmira\n\n";
+	
+	try{
+		classes_load('classes_core', 'print');
+		
+		// TODO: complete prototype for debugging
+		
+		$plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
+		
+		$block = new Block($plaintext);
+		
+		$selection = new Selection( 13, $block->plaintext());
+		
+		var_dump($selection->debug_plaintext());
+		exit(0);
+	}
+	catch( Exception $e )
+	{
+		echo "ERROR:\n\n".$e."\n\n";
+	}
+	
