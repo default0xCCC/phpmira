@@ -65,6 +65,36 @@
 		
 		
 		/**
+		 * mutate 64+iter times, producing initial selection and mutation numbers and
+		 *  changing contents of binarystring
+		 */
+		public function mutate( $iter = 0 )
+		{
+			$iterations = 64 + $iter;
+			
+			$changes = array();
+			
+			for( $iteration = 0; $iteration < $iterations; $iteration++ )
+			{
+				$selection = base_convert(substr($this->_binarystring, 0, 4), 2, 10);
+				
+				$mutation = base_convert(substr($this->_binarystring, (strlen($this->_binarystring)-4), 4), 2, 10);
+				
+				$changes[$iteration] = array(
+					'selection'	=> $selection,
+					'mutation'	=> $mutation,
+				);
+				
+				$selection = new Selection($this->_binarystring, $selection, $mutation);
+				
+				$this->_binarystring = (string)$selection;
+				
+				// TODO: complete, test implementation
+			}
+		}
+		
+		
+		/**
 		 * convert binary string to ASCII
 		 */
 		public function to_ascii( $input_string = '' )

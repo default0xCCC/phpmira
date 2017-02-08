@@ -34,8 +34,8 @@
 		 * - instantiate Block
 		 * 	- render plaintext to binary string (unfortunately)
 		 *	- for (i = length of padded plaintext) do
-		 *		- instantiate new Selection from Block based upon
-		 *		1st ordinal number
+		 *		- instantiate new Selection and Mutation from Block based upon
+		 *		1st ordinal number (4b) and last ordinal number (4b)
 		 *		- Selection->mutate()
 		 *		- update Block cyphertext
 		 *	- done
