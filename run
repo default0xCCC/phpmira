@@ -28,15 +28,31 @@
 	try{
 		classes_load('classes_core', 'print');
 		
+		/**
+		 * revised workflow:
+		 * 
+		 * - instantiate Block
+		 * 	- render plaintext to binary string (unfortunately)
+		 *	- for (i = length of padded plaintext) do
+		 *		- instantiate new Selection from Block based upon
+		 *		1st ordinal number
+		 *		- Selection->mutate()
+		 *		- update Block cyphertext
+		 *	- done
+		 *	- render binary string to binary
+		 */
+		
 		// TODO: complete prototype for debugging
 		
 		$plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
 		
 		$block = new Block($plaintext);
 		
-		$selection = new Selection( 13, $block->plaintext());
-		
-		var_dump($selection->debug_plaintext());
+		var_dump(
+			$plaintext,
+			$block->binarystring_debug(),
+			$block->binarystring_to_ascii()
+		);
 		exit(0);
 	}
 	catch( Exception $e )
