@@ -76,9 +76,9 @@
 			
 			for( $iteration = 0; $iteration < $iterations; $iteration++ )
 			{
-				$selection = base_convert(substr($this->_binarystring, 0, 4), 2, 10);
+				$selection = substr($this->_binarystring, 0, 4);
 				
-				$mutation = base_convert(substr($this->_binarystring, (strlen($this->_binarystring)-4), 4), 2, 10);
+				$mutation = substr($this->_binarystring, (strlen($this->_binarystring)-4), 4);
 				
 				$changes[$iteration] = array(
 					'selection'	=> $selection,
@@ -87,7 +87,7 @@
 				
 				$selection = new Selection($this->_binarystring, $selection, $mutation);
 				
-				$this->_binarystring = (string)$selection;
+				$this->_binarystring = $selection->encode();
 				
 				// TODO: complete, test implementation
 			}
