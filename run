@@ -51,18 +51,11 @@
 		
 		$binarystring = $block->to_binarystring($plaintext);
 		
-		$binarystring_before = $binarystring;
-		
-		$selection = Selection::select_all($binarystring);
-		
-		$selection['selected'] = Selection::mutate_shift($selection['selected'], -1);
-		
-		$binarystring_after = $block->merge( $selection );
+		$selection = Selection::select_quarters($binarystring, array(1, 2));
 		
 		var_dump(
 			$plaintext,
-			$binarystring_before,
-			$binarystring_after
+			$selection
 		);
 		exit(0);
 	}

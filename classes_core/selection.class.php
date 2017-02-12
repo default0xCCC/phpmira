@@ -37,39 +37,98 @@
 		}
 		
 		// TODO: comment
-		public static function select_all( $binarystring )
+		public static function select_half( $binarystring, $half )
 		{
+			$length_half = strlen($binarystring) / 2;
+			
+			$selected = ( $half )
+				? substr($binarystring, $length_half - 1, $length_half)
+				: substr($binarystring, 0, $length_half);
+			
+			$original = ( $half )
+				? substr($binarystring, 0, $length_half).str_repeat('X', $length_half)
+				: str_repeat('X', $length_half).substr($binarystring, $length_half - 1, $length_half);
+			
 			return array(
-				'original' => str_repeat('X', strlen($binarystring)),
-				'selected' => $binarystring,
+				'original' => $original,
+				'selected' => $selected,
 			);
 		}
 		
 		// TODO: comment
-		public static function select_half( $binarystring, $half )
-		{
-			
-			// TODO
-		}
-		
-		
-		// TODO: comment
 		public static function select_ordinal( $binarystring, $position )
 		{
-			// TODO
+			$original = '';
+			$selected = '';
+			
+			for( $i = 0; $i < strlen($binarystring); $i++ )
+			{
+				if( ($i % $position) == 0 )
+				{
+					$original .= 'X';
+					$selected .= substr($binarystring, $i, 1);
+					continue;
+				}
+				
+				$original .= substr($binarystring, $i, 1);
+			}
+			
+			return array(
+				'original' => $original,
+				'selected' => $selected,
+			);
 		}
 		
 		// TODO: comment
 		public static function select_quarter( $binarystring, $position )
 		{
-			// TODO
+			$original = '';
+			$selected = '';
+			
+			$length_quarter = strlen($binarystring) / 4;
+			
+			for( $i = 0; $i < $length_quarter; $i++ )
+			{
+				if( $i == $position )
+				{
+					$original .= str_repeat('X', $length_quarter);
+					$selected .= substr($binarystring, ($i * $length_quarter), $length_quarter);
+					continue;
+				}
+				
+				$original .= substr($binarystring, ($i * $length_quarter), $length_quarter);
+			}
+			
+			return array(
+				'original' => $original,
+				'selected' => $selected,
+			);
 		}
 		
 		// TODO: comment
 		public static function select_quarters( $binarystring, $positions )
 		{
-			// TODO
+			$original = '';
+			$selected = '';
+			
+			$length_quarter = strlen($binarystring) / 4;
+			
+			for( $i = 0; $i < $length_quarter; $i++ )
+			{
+				if( in_array($i, $positions) )
+				{
+					$original .= str_repeat('X', $length_quarter);
+					$selected .= substr($binarystring, ($i * $length_quarter), $length_quarter);
+					continue;
+				}
+				
+				$original .= substr($binarystring, ($i * $length_quarter), $length_quarter);
+			}
+			
+			return array(
+				'original' => $original,
+				'selected' => $selected,
+			);
 		}
-		
 		
 	}
