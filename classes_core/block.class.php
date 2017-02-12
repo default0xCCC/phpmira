@@ -3,6 +3,44 @@
 	{
 		protected $_binarystring = "";
 		
+		protected $_map_selection = array(
+			'0000'	=> array('select_all'),
+			'0001'	=> array('select_ordinal', 3),
+			'0010'	=> array('select_ordinal', 5),
+			'0011'	=> array('select_ordinal', 7),
+			'0100'	=> array('select_ordinal', 11),
+			'0101'	=> array('select_ordinal', 19),
+			'0110'	=> array('select_ordinal', 23),
+			'0111'	=> array('select_half', 0),
+			'1000'	=> array('select_half', 1),
+			'1001'	=> array('select_quarter', 0),
+			'1010'	=> array('select_quarter', 1),
+			'1011'	=> array('select_quarter', 2),
+			'1100'	=> array('select_quarter', 3),
+			'1101'	=> array('select_quarters', array(0,2)),
+			'1110'	=> array('select_quarters', array(1,3)),
+			'1111'	=> array('select_all'),
+		);
+		
+		protected $_map_mutation = array(
+			'0000'	=> array('', 1234),
+			'0001'	=> array('', 1234),
+			'0010'	=> array('', 1234),
+			'0011'	=> array('', 1234),
+			'0100'	=> array('', 1234),
+			'0101'	=> array('', 1234),
+			'0110'	=> array('', 1234),
+			'0111'	=> array('', 1234),
+			'1000'	=> array('', 1234),
+			'1001'	=> array('', 1234),
+			'1010'	=> array('', 1234),
+			'1011'	=> array('', 1234),
+			'1100'	=> array('', 1234),
+			'1101'	=> array('', 1234),
+			'1110'	=> array('', 1234),
+			'1111'	=> array('', 1234),
+		);
+		
 		protected $_plaintext = "";
 		
 		public function __construct( string $plaintext = "" )
@@ -11,8 +49,6 @@
 			{
 				throw new Exception('no plaintext specified');
 			}
-			
-			$plaintext = str_pad($plaintext, 64);
 			
 			$this->_plaintext = $plaintext;
 			
@@ -32,9 +68,10 @@
 		/**
 		 * print-formatted output
 		 */
-		public function binarystring_debug()
+		public function binarystring_debug( $input_string = null )
 		{
-			$input_string = $this->_binarystring;
+			if( ! $input_string )
+				$input_string = $this->_binarystring;
 			
 			$output_string = '';
 			
@@ -65,13 +102,41 @@
 		
 		
 		/**
-		 * mutate 64+iter times, producing initial selection and mutation numbers and
+		 * merge results from Selection methods
+		 */
+		public function merge( $selection_results = array() )
+		{
+			$binarystring = $selection_results['original'];
+			
+			$changes = $selection_results['selected'];
+			
+			$changes_accepted = 0;
+			
+			$result = '';
+			
+			for( $i = 0; $i < strlen($binarystring); $i++ )
+			{
+				if( 'X' != substr($binarystring, $i, 1) )
+				{
+					$result .= substr($binarystring, $i, 1);
+					continue;
+				}
+				
+				$result .= $changes[$changes_accepted];
+				
+				$changes_accepted++;
+			}
+			
+			return $result;
+		}
+		
+		
+		/**
+		 * mutate iter times, producing initial selection and mutation numbers and
 		 *  changing contents of binarystring
 		 */
-		public function mutate( $iter = 0 )
+		public function mutate( $iterations = 64 )
 		{
-			$iterations = 64 + $iter;
-			
 			$changes = array();
 			
 			for( $iteration = 0; $iteration < $iterations; $iteration++ )

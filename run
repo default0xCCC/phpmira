@@ -43,15 +43,26 @@
 		 */
 		
 		// TODO: complete prototype for debugging
+		// $plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
 		
-		$plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
+		$plaintext = '/   ';
 		
 		$block = new Block($plaintext);
 		
+		$binarystring = $block->to_binarystring($plaintext);
+		
+		$binarystring_before = $binarystring;
+		
+		$selection = Selection::select_all($binarystring);
+		
+		$selection['selected'] = Selection::mutate_shift($selection['selected'], -1);
+		
+		$binarystring_after = $block->merge( $selection );
+		
 		var_dump(
 			$plaintext,
-			$block->binarystring_debug(),
-			$block->binarystring_to_ascii()
+			$binarystring_before,
+			$binarystring_after
 		);
 		exit(0);
 	}

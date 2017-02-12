@@ -1,101 +1,82 @@
 <?php
 	class Selection
 	{
-		protected $_binarystring = null;
 		
-		protected $_callback_selection = null;
-		protected $_callback_mutation = null;
-		
-		protected $_map_selection = array(
-			'0000'	=> array('', 1234),
-			'0001'	=> array('', 1234),
-			'0010'	=> array('', 1234),
-			'0011'	=> array('', 1234),
-			'0100'	=> array('', 1234),
-			'0101'	=> array('', 1234),
-			'0110'	=> array('', 1234),
-			'0111'	=> array('', 1234),
-			'1000'	=> array('', 1234),
-			'1001'	=> array('', 1234),
-			'1010'	=> array('', 1234),
-			'1011'	=> array('', 1234),
-			'1100'	=> array('', 1234),
-			'1101'	=> array('', 1234),
-			'1110'	=> array('', 1234),
-			'1111'	=> array('', 1234),
-		);
-		
-		protected $_map_mutation = array(
-			'0000'	=> array('', 1234),
-			'0001'	=> array('', 1234),
-			'0010'	=> array('', 1234),
-			'0011'	=> array('', 1234),
-			'0100'	=> array('', 1234),
-			'0101'	=> array('', 1234),
-			'0110'	=> array('', 1234),
-			'0111'	=> array('', 1234),
-			'1000'	=> array('', 1234),
-			'1001'	=> array('', 1234),
-			'1010'	=> array('', 1234),
-			'1011'	=> array('', 1234),
-			'1100'	=> array('', 1234),
-			'1101'	=> array('', 1234),
-			'1110'	=> array('', 1234),
-			'1111'	=> array('', 1234),
-		);
-		
-		public function __construct( $binarystring = '', $selection = null, $mutation = null )
+		// TODO: comment
+		public static function mutate_shift( $binarystring, $places = 0 )
 		{
-			$this->_callback_selection = $this->_map_selection[$selection];
+			if( $places == 0 )
+				throw new Exception('invalid number of places specified');
 			
-			$this->_callback_mutation = $this->_map_mutation[$mutation];
+			if( $places < 0 )
+			{
+				$places = $places * -1;
+				
+				$binarystring_concat = strrev($binarystring);
+				
+				while( strlen($binarystring_concat) < strlen($binarystring)+$places )
+				{
+					$binarystring_concat .= $binarystring;
+				}
+				
+				$binarystring_after = '';
+				
+				for( $i = $places; $i < strlen($binarystring)+1; $i++ )
+				{
+					$binarystring_after .= substr($binarystring_concat, $i, 1);
+				}
+				
+				return strrev($binarystring_after);
+			}
 			
-			$this->_binarystring = ''; // TODO: call_user_func() from mapped callback definition
+			$binarystring_concat = $binarystring;
+			
+			while( strlen($binarystring_concat) < strlen($binarystring)+$places )
+			{
+				$binarystring_concat .= $binarystring;
+			}
+			
+			$binarystring_after = '';
+			
+			for( $i = $places; $i < strlen($binarystring)+1; $i++ )
+			{
+				$binarystring_after .= substr($binarystring_concat, $i, 1);
+			}
+			
+			return $binarystring_after;
 		}
 		
-		
-		public function decode()
+		// TODO: comment
+		public static function select_all( $binarystring )
 		{
+			return array(
+				'original' => str_repeat('X', strlen($binarystring)),
+				'selected' => $binarystring,
+			);
 		}
 		
-		public function encode()
+		// TODO: comment
+		public static function select_half( $binarystring, $half )
 		{
-		}
-		
-		
-		// TODO: mutation functions
-		protected function mutate_shift_right( $spaces )
-		{
+			
 			// TODO
 		}
 		
-		// TODO: mutation functions
-		protected function mutate_shift_left( $spaces )
+		
+		// TODO: comment
+		public static function select_ordinal( $binarystring, $position )
 		{
 			// TODO
 		}
 		
 		// TODO: comment
-		protected function select_half( $half )
-		{
-			// TODO
-		}
-		
-		
-		// TODO: comment
-		protected function select_ordinal( $position )
+		public static function select_quarter( $binarystring, $position )
 		{
 			// TODO
 		}
 		
 		// TODO: comment
-		protected function select_quarter( $half )
-		{
-			// TODO
-		}
-		
-		// TODO: comment
-		protected function select_quarters( $half )
+		public static function select_quarters( $binarystring, $positions )
 		{
 			// TODO
 		}
