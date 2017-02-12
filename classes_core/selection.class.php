@@ -16,15 +16,10 @@
 				
 				while( strlen($binarystring_concat) < strlen($binarystring)+$places )
 				{
-					$binarystring_concat .= $binarystring;
+					$binarystring_concat .= strrev($binarystring);
 				}
 				
-				$binarystring_after = '';
-				
-				for( $i = $places; $i < strlen($binarystring)+1; $i++ )
-				{
-					$binarystring_after .= substr($binarystring_concat, $i, 1);
-				}
+				$binarystring_after = substr($binarystring_concat, $places, strlen($binarystring));
 				
 				return strrev($binarystring_after);
 			}
@@ -36,12 +31,7 @@
 				$binarystring_concat .= $binarystring;
 			}
 			
-			$binarystring_after = '';
-			
-			for( $i = $places; $i < strlen($binarystring)+1; $i++ )
-			{
-				$binarystring_after .= substr($binarystring_concat, $i, 1);
-			}
+			$binarystring_after = substr($binarystring_concat, $places, strlen($binarystring));
 			
 			return $binarystring_after;
 		}
