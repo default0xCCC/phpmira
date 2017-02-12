@@ -42,6 +42,42 @@
 		 *	- render binary string to binary
 		 */
 		
+		/**
+		 * cli invocation
+		 * 
+		 * TODO: replace operation and mode with executable scripts for ease of use
+		 * 
+		 * required:
+		 *  - input (string)
+		 *  - input_file (path)
+		 *  - operation (encode | decode)
+		 *  - mode (password:iterations | [first&last]:iterations)
+		 *  - encoding (default:base64 | debug)
+		 */
+		
+		$options_cli_map = array(
+			'i::'	=> 'input::',
+			'f::'	=> 'input_file::',
+			'o::'	=> 'operation::',
+			'm::'	=> 'mode::',
+			'e::'	=> 'encoding::',
+		);
+		
+		$options_cli_default = array(
+			'input'		=> '',
+			'input_file'	=> '',
+			'operation'	=> '',
+			'mode'		=> '',
+			'encoding'	=> 'base64',
+		);
+		
+		$options_cli = getopt( implode(array_keys($options_cli_map)), $options_cli_map );
+		
+		$options_cli = array_merge($options_cli_default, $options_cli);
+		
+		var_dump( $options_cli );
+		exit(0);
+		
 		// TODO: complete prototype for debugging
 		// $plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
 		
