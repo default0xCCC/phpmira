@@ -23,10 +23,8 @@
 		}
 	}
 	
-	echo "\nphpmira\n\n";
-	
 	try{
-		classes_load('classes_core', 'print');
+		classes_load('classes_core');
 		
 		/**
 		 * revised workflow:
@@ -50,53 +48,47 @@
 		 * required:
 		 *  - input (string)
 		 *  - input_file (path)
+		 *  - mode (password | stream)
+		 *  - number (iterations)
 		 *  - operation (encode | decode)
-		 *  - mode (password:iterations | [first&last]:iterations)
 		 *  - encoding (default:base64 | debug)
 		 */
 		
 		$options_cli_map = array(
+			'e::'	=> 'encoding::',
 			'i::'	=> 'input::',
 			'f::'	=> 'input_file::',
-			'o::'	=> 'operation::',
 			'm::'	=> 'mode::',
-			'e::'	=> 'encoding::',
+			'n::'	=> 'number::',
+			'o::'	=> 'operation::',
+			'p::'	=> 'password::',
+			'x::'	=> 'password_file::', // TODO
 		);
 		
 		$options_cli_default = array(
+			'encoding'	=> 'debug',
 			'input'		=> '',
 			'input_file'	=> '',
-			'operation'	=> '',
-			'mode'		=> '',
-			'encoding'	=> 'base64',
+			'mode'		=> 'stream',
+			'number'	=> 64,
+			'operation'	=> 'encode',
+			'password'	=> '',
+			'password_file'	=> '', // TODO
 		);
 		
 		$options_cli = getopt( implode(array_keys($options_cli_map)), $options_cli_map );
 		
 		$options_cli = array_merge($options_cli_default, $options_cli);
 		
-		var_dump( $options_cli );
-		exit(0);
+		$block = new Block($options_cli);
 		
-		// TODO: complete prototype for debugging
-		// $plaintext = 'AAAABBBBCCCCDDDDEEEEFFFFHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQ';
-		
-		$plaintext = '/   ';
-		
-		$block = new Block($plaintext);
-		
-		$binarystring = $block->to_binarystring($plaintext);
-		
-		$selection = Selection::select_quarters($binarystring, array(1, 2));
-		
-		var_dump(
-			$plaintext,
-			$selection
-		);
-		exit(0);
+		$block->encode();
 	}
 	catch( Exception $e )
 	{
-		echo "ERROR:\n\n".$e."\n\n";
+		echo "\nERROR: ".$e->getMessage()."\n\n";
+		echo "usage:\n";
+		echo "./run --input=debug --mode=password --password=debug\n";
+		exit(1);
 	}
 	

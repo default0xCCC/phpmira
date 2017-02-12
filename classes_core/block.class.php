@@ -1,7 +1,7 @@
 <?php
 	class Block
 	{
-		protected $_binarystring = "";
+		protected $_input = "";
 		
 		protected $_map_selection = array(
 			'0000'	=> array('select_ordinal', 1),
@@ -22,7 +22,7 @@
 			'1111'	=> array('select_ordinal', 1),
 		);
 		
-		protected $_map_mutation = array(
+		protected $_map_shift = array(
 			'0000'	=> array('mutate_shift', 1),
 			'0001'	=> array('mutate_shift', 2),
 			'0010'	=> array('mutate_shift', 3),
@@ -41,18 +41,70 @@
 			'1111'	=> array('mutate_shift', -8),
 		);
 		
-		protected $_plaintext = "";
+		protected $_mode = 'password';
 		
-		public function __construct( string $plaintext = "" )
+		protected $_number = 0;
+		
+		protected $_operation = 'encode';
+		
+		protected $_password = '';
+		
+		
+		public function __construct( $options_cli = array() )
 		{
-			if( ! $plaintext )
+			// TODO: handle file as input
+			if( ! $options_cli['input'] )
+				throw new Exception('missing input');
+			
+			switch( true )
 			{
-				throw new Exception('no plaintext specified');
+				case ( ! $options_cli['number'] ):
+				case ( ! is_numeric($options_cli['number']) ):
+					throw new Exception('missing/invalid number of iterations');
+				break;
+				case ( $options_cli['number'] < 64 ):
+					throw new Exception('number of iterations must be greater than 64');
+				break;
+				default:
+					// acceptable
+				break;
+			}
+			$this->_number = $options_cli['number'];
+		
+			switch( $options_cli['operation'] )
+			{
+				case 'decode':
+					// TODO
+					throw new Exception('not implemented');
+				case 'encode':
+					// valid
+				break;
+				case '':
+					throw new Exception('operation not set');
+				break;
+				default:
+					throw new Exception('option specified not valid');
+				break;
 			}
 			
-			$this->_plaintext = $plaintext;
+			switch( $options_cli['mode'] )
+			{
+				case 'password':
+					if( ! $options_cli['password'] )
+						throw new Exception('missing password');
+				break;
+				case '':
+					throw new Exception('mode not set');
+				break;
+				default:
+					throw new Exception('option specified not valid');
+				break;
+			}
 			
-			$this->_binarystring = $this->to_binarystring($this->_plaintext);
+			// TODO: handle password file
+			$this->_password = $options_cli['password'];
+			
+			$this->_input = $this->to_binarystring($options_cli['input']);
 		}
 		
 		
@@ -61,7 +113,7 @@
 		 */
 		public function binarystring()
 		{
-			return $this->_binarystring;
+			return $this->_input;
 		}
 		
 		
@@ -71,7 +123,7 @@
 		public function binarystring_debug( $input_string = null )
 		{
 			if( ! $input_string )
-				$input_string = $this->_binarystring;
+				$input_string = $this->_input;
 			
 			$output_string = '';
 			
@@ -97,7 +149,7 @@
 		 */
 		public function binarystring_to_ascii()
 		{
-			return $this->to_ascii( $this->_binarystring );
+			return $this->to_ascii( $this->_input );
 		}
 		
 		
@@ -106,6 +158,12 @@
 		 */
 		public function merge( $selection_results = array() )
 		{
+			if(
+				! array_key_exists('original', $selection_results) ||
+				! array_key_exists('selected', $selection_results)
+			)
+				throw new Exception('bad results: '.var_export($selection_results, 1));
+			
 			$binarystring = $selection_results['original'];
 			
 			$changes = $selection_results['selected'];
@@ -132,30 +190,55 @@
 		
 		
 		/**
-		 * mutate iter times, producing initial selection and mutation numbers and
+		 * mutate iter times, producing initial selection and shift numbers and
 		 *  changing contents of binarystring
 		 */
-		public function mutate( $iterations = 64 )
+		public function encode()
 		{
+			$iterations = $this->_number;
+			
 			$changes = array();
+			
+			if( $this->_mode == 'password' )
+			{
+				$password_nonce = $this->to_binarystring($this->_password);
+			}
 			
 			for( $iteration = 0; $iteration < $iterations; $iteration++ )
 			{
-				$selection = substr($this->_binarystring, 0, 4);
-				
-				$mutation = substr($this->_binarystring, (strlen($this->_binarystring)-4), 4);
+				switch( $this->_mode )
+				{
+					case 'password':
+					default:
+						$password_nonce_position = $iteration % strlen($this->_password);
+						$selection = substr($password_nonce, ($password_nonce_position * 4), 4);
+						$shift = substr($password_nonce, ($password_nonce_position * 4) + 4, 4);
+					break;
+				}
 				
 				$changes[$iteration] = array(
 					'selection'	=> $selection,
-					'mutation'	=> $mutation,
+					'shift'		=> $shift,
 				);
 				
-				$selection = new Selection($this->_binarystring, $selection, $mutation);
+				$fn = 'Selection::'.$this->_map_selection[$selection][0];
 				
-				$this->_binarystring = $selection->encode();
+				$results = $fn($this->_input, $this->_map_selection[$selection][1]);
 				
-				// TODO: complete, test implementation
+				$fn = 'Selection::'.$this->_map_shift[$selection][0];
+				
+				$results['selected'] = $fn($results['selected'], $this->_map_shift[$shift][1]);
+				
+				$this->_input = $this->merge($results);
+				
+				var_dump($this->_input);
 			}
+			
+			var_dump(
+				$this->_input
+			);
+			
+			return true;
 		}
 		
 		
